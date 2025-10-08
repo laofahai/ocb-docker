@@ -11,6 +11,8 @@
 ## 构建镜像
 
 ```bash
+# 如本地存在代理变量，建议构建前显式清空
+# docker build --build-arg http_proxy= --build-arg https_proxy= -t laofahai01/odoo-ocb:18.0 .
 docker build -t laofahai01/odoo-ocb:18.0 .
 ```
 
@@ -19,6 +21,9 @@ docker build -t laofahai01/odoo-ocb:18.0 .
 - `OCB_REPO`：OCB 仓库地址，默认 `https://github.com/OCA/OCB.git`
 - `OCB_REF`：Git 分支或标签，默认 `18.0`
 - `OCB_COMMIT`：具体提交哈希，可选；设置时会优先生效
+- `OCB_ARCHIVE_URL`：用于下载 tarball 的基础 URL，默认 `https://github.com/OCA/OCB/archive`
+
+> 构建阶段已经将 `http_proxy`/`https_proxy` 等变量清空，确保不会访问到宿主机的本地代理。如需自定义代理，可在构建时通过 `--build-arg` 传入。
 
 ## 运行容器
 
