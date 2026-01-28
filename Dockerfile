@@ -6,25 +6,15 @@ ARG OCB_REPO="https://github.com/OCA/OCB.git"
 ARG OCB_REF="18.0"
 ARG OCB_COMMIT=""
 ARG OCB_ARCHIVE_URL="https://github.com/OCA/OCB/archive"
+ARG BUILD_PROXY=""
 
 USER root
 
-ENV http_proxy= \
-    https_proxy= \
-    HTTP_PROXY= \
-    HTTPS_PROXY= \
-    no_proxy=localhost,127.0.0.1 \
-    NO_PROXY=localhost,127.0.0.1 \
-    PIP_NO_PROXY=* \
-    PIP_PROXY= \
-    PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
-    PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn \
-    ALL_PROXY= \
-    all_proxy= \
-    PIP_CONFIG_FILE=/dev/null
+ENV PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
+    PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
 
 RUN set -eux; \
-    unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; \
+    if [ -n "${BUILD_PROXY}" ]; then export http_proxy="${BUILD_PROXY}" https_proxy="${BUILD_PROXY}"; fi; \
     mkdir -p /tmp/ocb; \
     tmp_dir=$(mktemp -d); \
     archive_ref="${OCB_COMMIT:-$OCB_REF}"; \
@@ -45,30 +35,15 @@ RUN set -eux; \
 
 FROM odoo:18.0
 
+ARG BUILD_PROXY=""
+
 USER root
 
-ENV http_proxy= \
-    https_proxy= \
-    HTTP_PROXY= \
-    HTTPS_PROXY= \
-    no_proxy=localhost,127.0.0.1 \
-    NO_PROXY=localhost,127.0.0.1 \
-    PIP_NO_PROXY=* \
-    PIP_PROXY= \
-    PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
-    PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn \
-    ALL_PROXY= \
-    all_proxy= \
-    PIP_CONFIG_FILE=/dev/null
-
 RUN set -eux; \
-    unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; \
-    :
-
-RUN set -eux; \
-    rm -f /etc/apt/apt.conf.d/*proxy*; \
-    unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy; \
-    printf '%s\n' 'Acquire::http::Proxy "false";' 'Acquire::https::Proxy "false";' > /etc/apt/apt.conf.d/99disable-proxy; \
+    if [ -n "${BUILD_PROXY}" ]; then \
+        export http_proxy="${BUILD_PROXY}" https_proxy="${BUILD_PROXY}"; \
+        printf 'Acquire::http::Proxy "%s";\nAcquire::https::Proxy "%s";\n' "${BUILD_PROXY}" "${BUILD_PROXY}" > /etc/apt/apt.conf.d/99proxy; \
+    fi; \
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
     apt-get install -y --no-install-recommends wget gnupg; \
@@ -77,7 +52,7 @@ RUN set -eux; \
     wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/pgdg.gpg; \
     apt-get update; \
     apt-get install -y --no-install-recommends build-essential libpq-dev python3-venv; \
-    rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/99disable-proxy
+    rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/99proxy
 
 ENV VIRTUAL_ENV=/opt/ocb-venv
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
@@ -86,9 +61,19 @@ RUN python3 -m venv --system-site-packages "${VIRTUAL_ENV}"
 
 COPY --from=ocb_source /tmp/ocb/requirements.txt /tmp/ocb_requirements.txt
 
+ARG EXTRA_REQUIREMENTS_FILE=requirements.txt
+COPY ${EXTRA_REQUIREMENTS_FILE} /tmp/extra_requirements.txt
+
 RUN set -eux; \
-    unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy PIP_PROXY; \
-    pip install --no-cache-dir -r /tmp/ocb_requirements.txt
+    if [ -n "${BUILD_PROXY}" ]; then export http_proxy="${BUILD_PROXY}" https_proxy="${BUILD_PROXY}"; fi; \
+    pip install --no-cache-dir -r /tmp/ocb_requirements.txt; \
+    if [ -s /tmp/extra_requirements.txt ]; then \
+        echo "[ocb-docker] installing extra requirements from ${EXTRA_REQUIREMENTS_FILE}"; \
+        pip install --no-cache-dir -r /tmp/extra_requirements.txt; \
+    else \
+        echo "[ocb-docker] no extra requirements provided"; \
+    fi; \
+    rm -f /tmp/extra_requirements.txt
 
 COPY --from=ocb_source /tmp/ocb /opt/ocb
 
