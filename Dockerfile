@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM odoo:18.0 AS ocb_source
 
 ARG OCB_REPO="https://github.com/OCA/OCB.git"
