@@ -39,11 +39,8 @@ ARG BUILD_PROXY=""
 
 USER root
 
+# apt 不使用代理，直接走官方源
 RUN set -eux; \
-    if [ -n "${BUILD_PROXY}" ]; then \
-        export http_proxy="${BUILD_PROXY}" https_proxy="${BUILD_PROXY}"; \
-        printf 'Acquire::http::Proxy "%s";\nAcquire::https::Proxy "%s";\n' "${BUILD_PROXY}" "${BUILD_PROXY}" > /etc/apt/apt.conf.d/99proxy; \
-    fi; \
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
     apt-get install -y --no-install-recommends wget gnupg; \
@@ -52,7 +49,7 @@ RUN set -eux; \
     wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/pgdg.gpg; \
     apt-get update; \
     apt-get install -y --no-install-recommends build-essential libpq-dev python3-venv; \
-    rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/99proxy
+    rm -rf /var/lib/apt/lists/*
 
 ENV VIRTUAL_ENV=/opt/ocb-venv
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"

@@ -1,0 +1,89 @@
+# ============================================
+# Odoo 18.0 项目依赖 (Python 3.12)
+# 自动生成，请勿手动编辑此文件
+# 使用 scripts/merge_requirements.py 重新生成
+# ============================================
+
+alibabacloud-dingtalk==2.1.11
+alibabacloud-tea-openapi==0.3.9
+alibabacloud_dysmsapi20170525>=2.0.24
+asn1crypto==1.5.1
+Babel==2.10.3
+beautifulsoup4==4.12.3
+black==24.10.0
+bokeh==3.6.3
+boto3==1.35.0
+botocore>=1.35.0
+cachetools==6.2.1
+cbor2==5.6.2
+chardet==5.2.0
+cpca-linch
+cryptography==42.0.8  # Odoo 18.0 官方版本
+decorator==5.1.1
+dingtalk-stream>=0.24.0  # 升级以兼容 urllib3 2.x
+docutils==0.20.1
+freezegun==1.2.1
+fsspec>=2025.9.0
+geoip2==2.9.0
+gevent==24.2.1  # Odoo 官方版本
+greenlet==3.0.3
+idna==3.6
+Jinja2==3.1.2
+lark-oapi==1.5.2
+libsass==0.22.0
+lxml==5.2.1  # Odoo 18.0 官方版本 (Python 3.12)
+lxml-html-clean
+markdown>=3.4.0
+MarkupSafe==2.1.5
+mpld3==0.5.10
+mysql-connector-python==9.1.0
+num2words==0.5.13
+odoo-test-helper
+openpyxl==3.1.2
+openupgradelib>=3.2.0
+packaging==24.2
+pandas==2.2.2
+passlib==1.7.4
+Pillow==10.2.0  # Odoo 18.0 官方版本 (Python 3.12)
+polib==1.1.1
+pre-commit==4.3.0
+psutil==5.9.8
+psycopg2-binary==2.9.9
+py3o.formats>=0.3.0
+py3o.template>=0.10.0
+pycryptodome==3.21.0
+pymdown-extensions>=10.0
+pyopenssl==24.1.0
+PyPDF2==2.12.1
+pypinyin==0.55.0
+pyserial==3.5
+python-dateutil==2.8.2
+python-dotenv==1.0.1
+python-ldap==3.4.4
+python-slugify==8.0.4
+python-stdnum==1.19
+pytz
+pyusb==1.2.1
+PyYAML==6.0.2
+qrcode==7.4.2
+redis==5.1.0
+reportlab==4.1.0
+requests==2.25.1 ;  python_version < '3.11'  # versions < 2.25 aren't compatible w/ urllib3 1.26. Bullseye = 2.25.1. min version = 2.22.0 (Focal)
+rjsmin==1.2.0
+ruff==0.5.7
+s3fs>=2025.9.0
+selenium==4.25.0
+thefuzz==0.22.1
+urllib3==2.0.7  # Odoo 官方版本，不升级
+vcrpy-unittest
+vobject==0.9.6.1
+webdriver-manager==4.0.2
+wechatpy==1.8.18
+Werkzeug==3.0.1  # Odoo 官方版本，不升级
+xlrd==2.0.1  # Odoo 18.0 官方版本 (Python 3.12) - 注意：xlrd 2.x 不支持 .xls，仅支持 .xlsx
+xlsxwriter==3.1.9  # Odoo 18.0 官方版本 (Python 3.12)
+xlwt==1.3.0
+zeep==4.2.1
+ortools>=9.8
+orjson
+oss2
